@@ -1,5 +1,6 @@
 package com.guilhermesouza.workshopmongo.resources;
 
+import com.guilhermesouza.workshopmongo.domain.Post;
 import com.guilhermesouza.workshopmongo.domain.User;
 import com.guilhermesouza.workshopmongo.dto.UserDTO;
 import com.guilhermesouza.workshopmongo.services.UserService;
@@ -15,8 +16,11 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping(value = "/users")
 public class UserResource {
-    @Autowired
-    private UserService service;
+    private final UserService service;
+
+    public UserResource(UserService service) {
+        this.service = service;
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity<List<UserDTO>> findAll() {
@@ -51,6 +55,12 @@ public class UserResource {
         obj.setId(id);
         obj = service.update(obj);
         return ResponseEntity.noContent().build();
+    }
+
+    @RequestMapping(value = "/{id}/posts", method = RequestMethod.GET)
+    public ResponseEntity<List<Post>> findPostsId(@PathVariable String id) {
+        User user = service.findById(id);
+        return ResponseEntity.ok().body(user.getPosts());
     }
 }
 
